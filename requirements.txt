@@ -1,0 +1,14 @@
+# ── Core data & ML ────────────────────────────────────────────────────────────
+pandas>=2.0,<3.0
+numpy>=1.26,<2.0
+pyarrow>=14.0            # Parquet read/write (candidates_clean.parquet)
+scikit-learn>=1.4,<2.0
+sentence-transformers>=2.7,<3.0  # prep_embeddings.py + prep_reasonings.py
+
+# ── AI / LLM ──────────────────────────────────────────────────────────────────
+google-generativeai>=0.7,<1.0    # prep_reasonings.py (Gemini 2.5 Flash)
+pydantic>=2.7,<3.0               # Structured outputs in prep_reasonings.py
+python-dotenv>=1.0               # Load GEMINI_API_KEY from .env
+
+# ── Demo UI ───────────────────────────────────────────────────────────────────
+gradio>=4.36,<5.0                # app.py (HuggingFace Spaces demo)
