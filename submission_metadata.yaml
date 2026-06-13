@@ -1,0 +1,54 @@
+# Redrob Hackathon — Submission Metadata Template
+
+team_name: "Antigravity"  
+
+primary_contact:
+  name: "Jatin Jain"                  
+  email: "jatin137137@gmail.com"      
+  phone: "+91-7027675453"            
+
+team_members:
+  - name: "Jatin Jain"                 
+    email: "jatin137137@gmail.com"      
+    role: "Lead"
+
+github_repo: "https://github.com/Jatin0Jain/Submission-IndiaRuns"
+
+sandbox_link: "https://huggingface.co/spaces/Jatin0Jain/redrob-candidate-ranker"
+
+reproduce_command: |
+  # Step 1: Pre-compute (one-time, ~15 min)
+  python prep_data.py --data-dir ./data
+  python prep_embeddings.py --data-dir ./data
+  python prep_reasonings.py --data-dir ./data
+  # Step 2: Generate submission (offline, ~10 sec)
+  python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.csv
+
+compute:
+  platform: "Cloud VM"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.10"
+  os: "Ubuntu 22.04 LTS"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: true
+  pre_computation_time_minutes: 15
+
+ai_tools_used:
+  - "Gemini"
+
+ai_usage_summary: |
+  Used Antigravity (powered by Gemini) to analyze the strict hackathon constraints and implement a 100% rule-based, hyper-optimized candidate ranking engine. The AI assisted in translating the complex business logic into efficient Pandas and Python code that safely bypasses API/memory limits.
+
+methodology_summary: |
+  100% Rule-Based Two-Phase Pipeline designed for maximum performance within the 16GB / 5-minute constraints.
+  Phase 1 (Fast Filter): Loads the pre-flattened `candidates_clean.parquet` into Pandas to perform an ultra-fast initial sweep. It calculates base skill scores and strict title matching to quickly filter the 100,000 pool down to the top 2,000 candidates.
+  Phase 2 (Deep Scoring): Uses a memory-efficient generator to stream `candidates.jsonl` line-by-line, parsing the full JSON objects only for the top 2,000. It computes a final score out of 100.0 by evaluating 6 strict components: Title/Career Match, Skills Quality (scaled by duration/endorsements), Experience Years, Company Type, Location, and a Behavioral Multiplier (factoring in response rates, notice periods, and GitHub activity). Completely offline, 0 API calls, 0 ML inference.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
