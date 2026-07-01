@@ -1,6 +1,6 @@
 # Redrob Hackathon — Submission Metadata Template
 
-team_name: "Antigravity"  
+team_name: "phenoX"
 
 primary_contact:
   name: "Jatin Jain"                  
@@ -14,7 +14,7 @@ team_members:
 
 github_repo: "https://github.com/Jatin0Jain/IndiaRunsSubmission-Candidate-Ranker"
 
-sandbox_link: "https://huggingface.co/spaces/Jatin0Jain/redrob-candidate-ranker"
+sandbox_link: "https://huggingface.co/spaces/Jatin0Jain/Redrob-Candidate-Ranker"
 
 reproduce_command: |
   # Step 1: Pre-compute (one-time, ~15 min)
