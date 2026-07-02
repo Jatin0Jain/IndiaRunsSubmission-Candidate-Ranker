@@ -19,22 +19,62 @@ Two-stage offline pipeline:
 **Demo**
 - `app.py` — Gradio app for interactive demo of the full ranking pipeline on the 100k dataset (hosted on HuggingFace Spaces)
 
-## Usage
+## Quick Start
+
+> **The final output is already included.** After cloning, open `team_submission.xlsx` — it contains the ranked top 100 candidates with scores and reasoning. No setup needed to view results.
 
 ```bash
-# Install dependencies
+git clone https://github.com/Jatin0Jain/IndiaRunsSubmission-Candidate-Ranker.git
+cd IndiaRunsSubmission-Candidate-Ranker
+# team_submission.xlsx is ready to review
+python validate_submission.py team_submission.xlsx   # validates the output
+```
+
+## Full Reproduction (from scratch)
+
+To regenerate `team_submission.xlsx` from the raw 100k dataset, you need the challenge data bundle (`candidates.jsonl`) provided by Redrob. Place it in a `data/` directory.
+
+```bash
+# 0. Install dependencies
 pip install -r requirements.txt
 
 # 1. Pre-compute (one-time, ~15 min on CPU)
-python prep_data.py --data-dir ./data
-python prep_embeddings.py --data-dir ./data
-python prep_reasonings.py --data-dir ./data   # enriches reasonings with Gemini
+#    Requires: data/candidates.jsonl (from challenge bundle)
+python prep_data.py --data-dir ./data          # → data/candidates_clean.parquet
+python prep_embeddings.py --data-dir ./data     # → data/candidate_embeddings.npy
+python prep_reasonings.py --data-dir ./data     # → candidate_reasonings.json (needs GEMINI_API_KEY in .env)
 
-# 2. Generate submission (fully offline, ~10 seconds)
+# 2. Generate submission (fully offline, ~10 seconds, no API calls)
 python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.xlsx
 
 # 3. Validate output
 python validate_submission.py team_submission.xlsx
+```
+
+### Prerequisites for full reproduction
+| Requirement | Details |
+|---|---|
+| Python | 3.10+ |
+| Challenge data | `candidates.jsonl` (100k profiles, from Redrob) → place in `./data/` |
+| Gemini API key | Only for `prep_reasonings.py` (set `GEMINI_API_KEY` in `.env`) |
+| GPU | Not required |
+| Network | Not required during ranking (Step 2) |
+
+## Repository Structure
+
+```
+├── rank.py                    # Core ranker: 2-phase scoring → team_submission.xlsx
+├── constants.py               # Scoring weights, skill relevance maps, firm lists
+├── prep_data.py               # Flattens JSONL → Parquet with honeypot detection
+├── prep_embeddings.py         # Generates candidate embeddings (all-MiniLM-L6-v2)
+├── prep_reasonings.py         # Pre-generates reasoning via Gemini 2.5 Flash
+├── validate_submission.py     # Validates output (supports .xlsx and .csv)
+├── app.py                     # Gradio demo UI (HuggingFace Spaces)
+├── candidate_reasonings.json  # Pre-computed reasoning strings (used by rank.py)
+├── team_submission.xlsx       # ✅ FINAL OUTPUT — 100 ranked candidates
+├── submission_metadata.yaml   # Team info, methodology, compute details
+├── requirements.txt           # Python dependencies
+└── README.md
 ```
 
 ## Ranking Formula
@@ -68,3 +108,4 @@ All scoring constants (skill weights, firm lists, normalisation) are in `constan
 - **No GPU** required
 - **No network calls** during ranking (fully offline)
 - **Honeypot protection:** 5-heuristic detection; zero honeypots in final top 100
+
