@@ -22,7 +22,7 @@ reproduce_command: |
   python prep_embeddings.py --data-dir ./data
   python prep_reasonings.py --data-dir ./data
   # Step 2: Generate submission (offline, ~10 sec)
-  python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.csv
+  python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.xlsx
 
 compute:
   platform: "Cloud VM"
@@ -44,7 +44,7 @@ ai_usage_summary: |
 methodology_summary: |
   100% Rule-Based Two-Phase Pipeline designed for maximum performance within the 16GB / 5-minute constraints.
   Phase 1 (Fast Filter): Loads the pre-flattened `candidates_clean.parquet` into Pandas to perform an ultra-fast initial sweep. It calculates base skill scores and strict title matching to quickly filter the 100,000 pool down to the top 2,000 candidates.
-  Phase 2 (Deep Scoring): Uses a memory-efficient generator to stream `candidates.jsonl` line-by-line, parsing the full JSON objects only for the top 2,000. It computes a final score out of 100.0 by evaluating 6 strict components: Title/Career Match, Skills Quality (scaled by duration/endorsements), Experience Years, Company Type, Location, and a Behavioral Multiplier (factoring in response rates, notice periods, and GitHub activity). Completely offline, 0 API calls, 0 ML inference.
+  Phase 2 (Deep Scoring): Uses a memory-efficient generator to stream `candidates.jsonl` line-by-line, parsing the full JSON objects only for the top 2,000. It computes a final score out of 100.0 by evaluating 6 strict components: Title/Career Match, Skills Quality (scaled by duration/endorsements), Experience Years, Company Type, Location, and a Behavioral Multiplier (factoring in response rates, notice periods, and GitHub activity). Outputs ranked results as `team_submission.xlsx`. Completely offline, 0 API calls, 0 ML inference.
 
 declarations:
   read_submission_spec: true

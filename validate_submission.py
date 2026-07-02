@@ -1,7 +1,7 @@
 """
 validate_submission.py
 ----------------------
-Validates a team_submission.csv against the hackathon rules:
+Validates a team submission file (CSV or XLSX) against the hackathon rules:
   - Must have exactly 100 rows
   - Required columns: candidate_id, rank, score, reasoning
   - Ranks must be 1–100 with no duplicates or gaps
@@ -10,12 +10,14 @@ Validates a team_submission.csv against the hackathon rules:
   - No duplicate candidate_ids
 
 Usage:
+    python validate_submission.py team_submission.xlsx
     python validate_submission.py team_submission.csv
 """
 
 import sys
 import csv
 import os
+import pandas as pd
 
 
 def validate(path: str) -> bool:
@@ -27,16 +29,25 @@ def validate(path: str) -> bool:
     errors = []
     warnings = []
 
-    with open(path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        columns = set(reader.fieldnames or [])
+    # Read based on file extension
+    ext = os.path.splitext(path)[1].lower()
+    if ext == ".xlsx":
+        df = pd.read_excel(path, engine="openpyxl")
+        rows = df.to_dict(orient="records")
+        columns = set(df.columns)
+    elif ext == ".csv":
+        with open(path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            columns = set(reader.fieldnames or [])
+            rows = list(reader)
+    else:
+        print(f"[FAIL] Unsupported file format: {ext}. Use .xlsx or .csv")
+        return False
 
-        missing = required_columns - columns
-        if missing:
-            print(f"[FAIL] Missing required columns: {missing}")
-            return False
-
-        rows = list(reader)
+    missing = required_columns - columns
+    if missing:
+        print(f"[FAIL] Missing required columns: {missing}")
+        return False
 
     # Row count
     if len(rows) != 100:
@@ -46,10 +57,10 @@ def validate(path: str) -> bool:
     seen_ranks = set()
 
     for i, row in enumerate(rows, start=2):  # start=2 because row 1 is the header
-        cid = row.get("candidate_id", "").strip()
-        rank_str = row.get("rank", "").strip()
-        score_str = row.get("score", "").strip()
-        reasoning = row.get("reasoning", "").strip()
+        cid = str(row.get("candidate_id", "")).strip()
+        rank_str = str(row.get("rank", "")).strip()
+        score_str = str(row.get("score", "")).strip()
+        reasoning = str(row.get("reasoning", "")).strip()
 
         # candidate_id
         if not cid:
@@ -61,7 +72,7 @@ def validate(path: str) -> bool:
 
         # rank
         try:
-            rank = int(rank_str)
+            rank = int(float(rank_str))
             if rank < 1 or rank > 100:
                 errors.append(f"Row {i}: rank {rank} is outside [1, 100]")
             elif rank in seen_ranks:
@@ -107,8 +118,9 @@ def validate(path: str) -> bool:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python validate_submission.py <path_to_submission.csv>")
+        print("Usage: python validate_submission.py <path_to_submission.xlsx|.csv>")
         sys.exit(1)
 
     ok = validate(sys.argv[1])
     sys.exit(0 if ok else 1)
+

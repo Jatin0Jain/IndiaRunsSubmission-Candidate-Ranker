@@ -94,5 +94,5 @@
 ### **Slide 10: Submission Assets**
 - **GitHub Repository:** [IndiaRunsSubmission-Candidate-Ranker](https://github.com/Jatin0Jain/IndiaRunsSubmission-Candidate-Ranker)
 - **Gradio Sandbox Demo:** [Redrob Candidate Ranker UI](https://huggingface.co/spaces/Jatin0Jain/Redrob-Candidate-Ranker)
-- **Final Output File:** `team_submission.csv` (Attached to submission)
+- **Final Output File:** `team_submission.xlsx` (Attached to submission)
 - **Video Walkthrough:** *(Insert your YouTube/Loom video link here)*

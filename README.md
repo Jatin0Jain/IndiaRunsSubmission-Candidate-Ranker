@@ -1,6 +1,6 @@
 # Intelligent Candidate Discovery & Ranking — Redrob Hackathon
 
-Ranking system for the [Redrob Hackathon](https://redrob.io) challenge: given 100,000 candidate profiles and a job description for a Senior AI Engineer, surface the top 100 best-fit candidates with a ranked CSV and per-candidate reasoning.
+Ranking system for the [Redrob Hackathon](https://redrob.io) challenge: given 100,000 candidate profiles and a job description for a Senior AI Engineer, surface the top 100 best-fit candidates with a ranked XLSX file and per-candidate reasoning.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ Two-stage offline pipeline:
 - `prep_reasonings.py` — uses Gemini 2.5 Flash to pre-generate nuanced, fact-specific reasoning strings for the top candidates; results cached in `candidate_reasonings.json`
 
 **Stage 2 — Ranking** (runs in <10 seconds, CPU only, no network calls)
-- `rank.py` — loads the pre-computed parquet, performs a fast 2-phase rule-based ranking, loads pre-generated reasonings, and outputs `team_submission.csv`
+- `rank.py` — loads the pre-computed parquet, performs a fast 2-phase rule-based ranking, loads pre-generated reasonings, and outputs `team_submission.xlsx`
   - *Phase 1:* Reads `candidates_clean.parquet` to rapidly filter 100k → top 2,000 via title matching and skill scoring
   - *Phase 2:* Streams `candidates.jsonl` for only those 2,000 IDs, computes a deep 6-component score, ranks and outputs top 100
 
@@ -31,10 +31,10 @@ python prep_embeddings.py --data-dir ./data
 python prep_reasonings.py --data-dir ./data   # enriches reasonings with Gemini
 
 # 2. Generate submission (fully offline, ~10 seconds)
-python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.csv
+python rank.py --candidates ./data/candidates.jsonl --out ./team_submission.xlsx
 
 # 3. Validate output
-python validate_submission.py team_submission.csv
+python validate_submission.py team_submission.xlsx
 ```
 
 ## Ranking Formula

@@ -2,6 +2,7 @@
 pandas>=2.0,<3.0
 numpy>=1.26,<2.0
 pyarrow>=14.0            # Parquet read/write (candidates_clean.parquet)
+openpyxl>=3.1,<4.0       # XLSX output for team_submission.xlsx
 scikit-learn>=1.4,<2.0
 sentence-transformers>=2.7,<3.0  # prep_embeddings.py + prep_reasonings.py
 

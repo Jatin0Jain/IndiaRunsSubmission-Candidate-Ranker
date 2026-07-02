@@ -3,7 +3,6 @@ import pandas as pd
 import gzip
 import json
 import os
-import csv
 import math
 from datetime import date
 from constants import CONSULTING_FIRMS, SKILL_RELEVANCE, PROFICIENCY_MULT, MAX_RAW_SCORE
@@ -339,11 +338,9 @@ def main():
             'reasoning': generate_reasoning(r['candidate_id'], r['full_json'], i + 1, r['score'], pre_generated)
         })
         
-    print("Writing submission.csv...")
-    with open(args.out, 'w', newline='', encoding='utf-8') as out_f:
-        writer = csv.DictWriter(out_f, fieldnames=['candidate_id', 'rank', 'score', 'reasoning'])
-        writer.writeheader()
-        writer.writerows(rows)
+    print("Writing submission XLSX...")
+    out_df = pd.DataFrame(rows, columns=['candidate_id', 'rank', 'score', 'reasoning'])
+    out_df.to_excel(args.out, index=False, engine='openpyxl')
         
     print("Done! Validating...")
     # Optional inline validation or just exit
